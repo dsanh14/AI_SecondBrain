@@ -61,7 +61,7 @@ def get_vector_store(index_name: Optional[str] = None) -> Any:
     )
 
 
-def create_chunks_from_text(text: str, note_id: str, metadata: Dict[str, Any] = None) -> List[Document]:
+def create_chunks_from_text(text: str, note_id: str, metadata: Optional[Dict[str, Any]] = None) -> List[Document]:
     """Create document chunks from text with metadata"""
     # Text splitter
     text_splitter = RecursiveCharacterTextSplitter(
@@ -83,7 +83,7 @@ def create_chunks_from_text(text: str, note_id: str, metadata: Dict[str, Any] = 
     return documents
 
 
-async def index_note(vector_store, text: str, note_id: str, metadata: Dict[str, Any] = None) -> int:
+async def index_note(vector_store, text: str, note_id: str, metadata: Optional[Dict[str, Any]] = None) -> int:
     """Index a note text into the vector store"""
     # Create chunks
     chunks = create_chunks_from_text(text, note_id, metadata)

@@ -4,8 +4,7 @@ from typing import Dict, List, Any, Optional
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
-from langchain_openai import ChatOpenAI, OpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_openai import ChatOpenAI
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import BaseModel, Field
@@ -168,10 +167,10 @@ def build_task_chain():
     # Output parser
     parser = JsonOutputParser(pydantic_object=TaskListSchema)
     
-    # Create prompt
+    # Create prompt (use tuple format so {text} is treated as a template variable)
     prompt = ChatPromptTemplate.from_messages([
-        SystemMessage(content="You are a task extraction assistant that creates structured JSON output."),
-        HumanMessage(content=TASK_EXTRACT_PROMPT),
+        ("system", "You are a task extraction assistant that creates structured JSON output."),
+        ("human", TASK_EXTRACT_PROMPT),
     ])
     
     # Build chain

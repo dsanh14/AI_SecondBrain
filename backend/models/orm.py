@@ -45,7 +45,7 @@ class Task(SQLModel, table=True):
     description: str = Field(sa_column=Column(Text))
     due_date: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
     owner: Optional[str] = Field(default=None, sa_column=Column(String(255)))
-    source_note_id: uuid.UUID = Field(
+    source_note_id: Optional[uuid.UUID] = Field(
         default=None,
         foreign_key="notes.id",
         sa_column=Column(UUID(as_uuid=True), ForeignKey("notes.id"))
