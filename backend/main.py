@@ -1,10 +1,20 @@
 import os
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routers import summarize, tasks, search, notes
+from services.database import create_db_and_tables
 
-app = FastAPI(title="AI Second Brain API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_db_and_tables()
+    yield
+
+
+app = FastAPI(title="AI Second Brain API", version="1.0.0", lifespan=lifespan)
 
 # Configure CORS for frontend
 app.add_middleware(

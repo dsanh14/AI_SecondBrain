@@ -51,9 +51,11 @@ class EmptyRetriever(BaseRetriever):
     """A fallback retriever that returns no documents"""
     
     def _get_relevant_documents(self, query: str) -> List[Document]:
-        """Return no documents"""
         logger.warning("Using EmptyRetriever - no documents will be returned")
         return []
+
+    async def _aget_relevant_documents(self, query: str) -> List[Document]:
+        return self._get_relevant_documents(query)
 
 
 async def process_and_index_note(

@@ -5,7 +5,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 
-from models.orm import Base
+from sqlmodel import SQLModel
+from models.orm import Note, Task, Link  # noqa: F401 — ensure models are registered
 
 # This is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -19,8 +20,7 @@ config.set_main_option("sqlalchemy.url", db_url)
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Add your model's MetaData object here
-target_metadata = Base.metadata
+target_metadata = SQLModel.metadata
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""

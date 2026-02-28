@@ -49,6 +49,10 @@ export interface NoteEmbedResponse {
   links: LinkInfo[];
 }
 
+export interface TaskExtractOut {
+  tasks: TaskItem[];
+}
+
 // Input types
 export interface SearchIn {
   query: string;

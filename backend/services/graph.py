@@ -48,8 +48,7 @@ async def link_related_notes(
         # In a real application, you might use the note content as the query
         query = f"note:{note_id}"
         
-        # Get relevant documents
-        docs = retriever.get_relevant_documents(query)
+        docs = retriever.invoke(query)
         
         # Filter out the current note (if present) and collect links
         links = []
@@ -125,9 +124,12 @@ async def get_graph_data(
     Returns:
         Dict with nodes and edges for visualization
     """
-    # This would typically query for all notes and links with limits
-    # For now we'll return a simplified structure
-    links = await get_note_links(session, None, limit)
+    from models.orm import Link as LinkORM
+    from sqlalchemy import select
+
+    stmt = select(LinkORM).order_by(LinkORM.similarity.desc()).limit(limit)
+    result = await session.execute(stmt)
+    links = result.scalars().all()
     
     # Create unique set of nodes
     nodes = set()

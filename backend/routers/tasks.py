@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
-from typing import List
+from typing import List, Optional
 
 from models.schemas import TaskExtractIn, TaskExtractOut, TaskItem
 from services.llm import build_task_chain
@@ -32,15 +32,19 @@ async def extract_tasks(
         
         # Extract tasks
         result = task_chain(data.text)
-        tasks = result.get("tasks", [])
+        raw_tasks = result.get("tasks", [])
+        
+        # Convert dicts to TaskItem instances
+        tasks = [
+            TaskItem(**t) if isinstance(t, dict) else t
+            for t in raw_tasks
+        ]
         
         # If source_note_id is provided, save tasks to database
         if data.source_note_id:
-            # Associate tasks with note ID
             for task in tasks:
                 task.source_note_id = data.source_note_id
                 
-            # Save to database
             await save_tasks(session, tasks)
         
         return TaskExtractOut(tasks=tasks)
@@ -50,7 +54,7 @@ async def extract_tasks(
 
 @router.get("", response_model=List[TaskItem])
 async def list_tasks(
-    completed: bool = None,
+    completed: Optional[bool] = None,
     session: AsyncSession = Depends(get_session),
     limit: int = 50,
     offset: int = 0
@@ -91,7 +95,7 @@ async def list_tasks(
 @router.patch("/{task_id}", response_model=TaskItem)
 async def update_task_status(
     task_id: uuid.UUID = Path(...),
-    completed: bool = None,
+    completed: Optional[bool] = None,
     session: AsyncSession = Depends(get_session)
 ):
     """

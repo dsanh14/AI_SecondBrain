@@ -77,7 +77,7 @@ async def save_tasks(session: AsyncSession, tasks: List[TaskItem]) -> List[Task]
     db_tasks = []
     
     for task_data in tasks:
-        task = Task(**task_data.dict())
+        task = Task(**task_data.model_dump())
         session.add(task)
         db_tasks.append(task)
     
